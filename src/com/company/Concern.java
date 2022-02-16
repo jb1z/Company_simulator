@@ -2,6 +2,6 @@ package com.company;
 
 public class Concern {
     String name = "";
-    String industry = "";
+    String type = "";
     float value = 0;
 }

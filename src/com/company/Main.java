@@ -8,8 +8,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
-import javafx.scene.Group;
-import javafx.scene.text.Text;
 
 public class Main extends Application{
 
@@ -21,19 +19,22 @@ public class Main extends Application{
         Button startButton = new Button("Start");
         startButton.setPrefWidth(80);
         Label nameLabel = new Label();
-        nameLabel.setPrefWidth(100);
+        Label moneyLabel = new Label();
+        Label valueLabel = new Label();
         startButton.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
                 Company mainCompany = new Company();
-                nameLabel.setText(mainCompany.name);
+                nameLabel.setText("Company's name: " + mainCompany.getName());
+                moneyLabel.setText("Company's money:" + String.valueOf(mainCompany.money) + "$");
+                valueLabel.setText("Value: " + String.valueOf(mainCompany.value) + "$");
             }
         });
-        FlowPane root = new FlowPane(startButton, nameLabel);
+        FlowPane root = new FlowPane(startButton, nameLabel, moneyLabel, valueLabel);
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("JavaFX Application");
-        stage.setWidth(300);
-        stage.setHeight(250);
+        stage.setWidth(1000);
+        stage.setHeight(500);
         stage.show();
     }
 }
