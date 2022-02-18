@@ -75,18 +75,21 @@ public class Main extends Application{
             moneyLabel.setText("Company's money:" + mainCompany.getMoney() + "$");
             mainCompany.valueRefresh();
             valueLabel.setText("Value: " + mainCompany.getValue() + "$");
+            mainCompany.arrConcernAdding(mainCompany.arrConcern, new Concern("Agriculture", (byte) 1, 200_000));
         });
         energyButton.setOnAction(event ->{
             mainCompany.moneyChange(-300_000);
             moneyLabel.setText("Company's money:" + mainCompany.getMoney() + "$");
             mainCompany.valueRefresh();
             valueLabel.setText("Value: " + mainCompany.getValue() + "$");
+            mainCompany.arrConcernAdding(mainCompany.arrConcern, new Concern("Energy", (byte) 2, 300_000));
         });
         itButton.setOnAction(event->{
             mainCompany.moneyChange(-400_000);
             moneyLabel.setText("Company's money:" + mainCompany.getMoney() + "$");
             mainCompany.valueRefresh();
             valueLabel.setText("Value: " + mainCompany.getValue() + "$");
+            mainCompany.arrConcernAdding(mainCompany.arrConcern, new Concern("IT", (byte) 3, 400_000));
         });
 
         /*Scene activating*/
