@@ -22,6 +22,9 @@ public class Company {
     }
     public void valueRefresh(){
         this.value = 500_000 + this.money;
+        for(int i = 0; i < arrConcern.length;i++) {
+            this.value+=arrConcern[i].value;
+        }
     }
     public Concern[] arrConcernAdding(Concern[] origArrConcern, Concern elementToAdd)
     {
