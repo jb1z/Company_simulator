@@ -2,6 +2,6 @@ package com.company;
 
 public class Concern {
     String name = "";
-    String type = "";
+    byte type = 0;
     float value = 0;
 }
