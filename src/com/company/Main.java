@@ -10,20 +10,20 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 public class Main extends Application{
     public static void main(String[] args) {
         launch(args);
     }
-    public String buttonClick(Company company, Label moneyLabel, Label valueLabel, ObservableList<String> concerns,
-                              String concernType, float moneyChange, byte concernTypeID, Button confirmation, TextField text){
+    public void buttonClick(Company company, Label moneyLabel, Label valueLabel, ObservableList<String> concerns,
+                              String concernType, float moneyChange, byte concernTypeID){
         company.moneyChange(-moneyChange);
         moneyLabel.setText("Company's money:" + company.getMoney() + "$");
         valueLabel.setText("Value: " + company.getValue() + "$");
         company.arrConcern = company.arrConcernAdding(company.arrConcern, new Concern(concernType, concernTypeID, moneyChange));
         company.valueRefresh();
         concerns.add(concernType);
-        confirmation.setDisable(false);
-        return text.getText();
     }
     public void start(Stage stage) {
         Company mainCompany = new Company();
@@ -97,6 +97,8 @@ public class Main extends Application{
         concernComboBox.setVisible(false);
 
         /*Buttons events*/
+        AtomicReference<Byte> concernTypeID = new AtomicReference<>((byte) 0);
+        AtomicReference<Float> moneyChange = new AtomicReference<Float>(0f);
         startButton.setOnAction(event -> {
             nameLabel.setText("Company's name: " + mainCompany.getName());
             moneyLabel.setText("Company's money:" + mainCompany.getMoney() + "$");
@@ -113,12 +115,44 @@ public class Main extends Application{
             confirmButton.setVisible(true);
             confirmLabel.setVisible(true);
         });
-        agricultureButton.setOnAction(event -> buttonClick(mainCompany, moneyLabel, valueLabel, concerns,
-                "Agriculture", 200_000, (byte) 1, confirmButton, nameInput));
-        energyButton.setOnAction(event -> buttonClick(mainCompany, moneyLabel, valueLabel, concerns,
-                "Energy", 300_000, (byte) 2, confirmButton, nameInput));
-        itButton.setOnAction(event-> buttonClick(mainCompany, moneyLabel, valueLabel, concerns,
-                "IT", 400_000, (byte) 3, confirmButton, nameInput));
+        agricultureButton.setOnAction(event -> {
+            concernTypeID.set((byte) 1);
+            moneyChange.set(200_000f);
+            agricultureButton.setDisable(true);
+            energyButton.setDisable(true);
+            itButton.setDisable(true);
+            nameInput.setEditable(true);
+            confirmButton.setDisable(false);
+        });
+        energyButton.setOnAction(event -> {
+            concernTypeID.set((byte) 2);
+            moneyChange.set(300_000f);
+            agricultureButton.setDisable(true);
+            energyButton.setDisable(true);
+            itButton.setDisable(true);
+            nameInput.setEditable(true);
+            confirmButton.setDisable(false);
+        });
+        itButton.setOnAction(event-> {
+            concernTypeID.set((byte) 3);
+            moneyChange.set(400_000f);
+            agricultureButton.setDisable(true);
+            energyButton.setDisable(true);
+            itButton.setDisable(true);
+            nameInput.setEditable(true);
+            confirmButton.setDisable(false);
+        });
+        confirmButton.setOnAction(event -> {
+            agricultureButton.setDisable(false);
+            energyButton.setDisable(false);
+            itButton.setDisable(false);
+            confirmButton.setDisable(true);
+            buttonClick(mainCompany, moneyLabel, valueLabel, concerns,
+                    nameInput.getText(), moneyChange.get(), concernTypeID.get());
+            confirmButton.setDisable(true);
+            nameInput.setEditable(false);
+            nameInput.clear();
+        });
         /*ComboBox event*/
         concernComboBox.setOnAction(event ->{
             String tempString = concernComboBox.getValue();
