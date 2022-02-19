@@ -1,7 +1,7 @@
 package com.company;
 
 public class Company {
-    private String name = "Your company";
+    private final String name = "Your company";
     private float money = 1_000_000;
     private float value = 500_000 + this.money;
     Concern[] arrConcern = new Concern[0];

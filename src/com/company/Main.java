@@ -10,25 +10,44 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Main extends Application{
     public static void main(String[] args) {
         launch(args);
     }
-    public void buttonClick(Company company, Label moneyLabel, Label valueLabel, ObservableList<String> concerns,
-                              String concernType, float moneyChange, byte concernTypeID){
+    public void confirmButtonClick(Company company, Label moneyLabel, Label valueLabel, ObservableList<String> concerns,
+                              String concernName, float moneyChange, byte concernTypeID){
         company.moneyChange(-moneyChange);
         moneyLabel.setText("Company's money:" + company.getMoney() + "$");
         valueLabel.setText("Value: " + company.getValue() + "$");
-        company.arrConcern = company.arrConcernAdding(company.arrConcern, new Concern(concernType, concernTypeID, moneyChange));
+        company.arrConcern = company.arrConcernAdding(company.arrConcern, new Concern(concernName, concernTypeID, moneyChange));
         company.valueRefresh();
-        concerns.add(concernType);
+        concerns.add(concernName);
     }
+    public void buyingButtonClick(AtomicReference<Byte> concernTypeID, byte ID, AtomicReference<Float> moneyChange,
+                                  float change, Button agricultureButton, Button energyButton, Button itButton,
+                                  Button confirmButton, TextField nameInput){
+        concernTypeID.set(ID);
+        moneyChange.set(change);
+        agricultureButton.setDisable(true);
+        energyButton.setDisable(true);
+        itButton.setDisable(true);
+        confirmButton.setDisable(false);
+        nameInput.setEditable(true);
+    }
+    static ThreadedTimer mainTimer;
     public void start(Stage stage) {
+        /*Launching thread with a timer*/
+        mainTimer = new ThreadedTimer();
+        mainTimer.start();
         Company mainCompany = new Company();
         /*Starting labels*/
         StackPane root = new StackPane();
+        root.setStyle("-fx-background-radius: 6;" +
+               "-fx-background-color: rgb(255, 160, 122), rgb(240, 255, 240);" +
+               "-fx-background-insets: 0, 0 1 1 0;");
         Button startButton = new Button("Start");
         Label nameLabel = new Label();
         StackPane.setAlignment(nameLabel, Pos.TOP_LEFT);
@@ -136,39 +155,18 @@ public class Main extends Application{
             infoLabel2.setVisible(true);
             infoLabel3.setVisible(true);
         });
-        agricultureButton.setOnAction(event -> {
-            concernTypeID.set((byte) 1);
-            moneyChange.set(200_000f);
-            agricultureButton.setDisable(true);
-            energyButton.setDisable(true);
-            itButton.setDisable(true);
-            nameInput.setEditable(true);
-            confirmButton.setDisable(false);
-        });
-        energyButton.setOnAction(event -> {
-            concernTypeID.set((byte) 2);
-            moneyChange.set(300_000f);
-            agricultureButton.setDisable(true);
-            energyButton.setDisable(true);
-            itButton.setDisable(true);
-            nameInput.setEditable(true);
-            confirmButton.setDisable(false);
-        });
-        itButton.setOnAction(event-> {
-            concernTypeID.set((byte) 3);
-            moneyChange.set(400_000f);
-            agricultureButton.setDisable(true);
-            energyButton.setDisable(true);
-            itButton.setDisable(true);
-            nameInput.setEditable(true);
-            confirmButton.setDisable(false);
-        });
+        agricultureButton.setOnAction(event -> buyingButtonClick(concernTypeID, (byte)1, moneyChange,200_000f,agricultureButton, energyButton,
+                itButton, confirmButton, nameInput));
+        energyButton.setOnAction(event -> buyingButtonClick(concernTypeID, (byte)2, moneyChange,300_000f,agricultureButton, energyButton,
+                itButton, confirmButton, nameInput));
+        itButton.setOnAction(event-> buyingButtonClick(concernTypeID, (byte)3, moneyChange,400_000f,agricultureButton, energyButton,
+                itButton, confirmButton, nameInput));
         confirmButton.setOnAction(event -> {
             agricultureButton.setDisable(false);
             energyButton.setDisable(false);
             itButton.setDisable(false);
             confirmButton.setDisable(true);
-            buttonClick(mainCompany, moneyLabel, valueLabel, concerns,
+            confirmButtonClick(mainCompany, moneyLabel, valueLabel, concerns,
                     nameInput.getText(), moneyChange.get(), concernTypeID.get());
             confirmButton.setDisable(true);
             nameInput.setEditable(false);
@@ -178,7 +176,7 @@ public class Main extends Application{
         concernComboBox.setOnAction(event ->{
             String tempString = concernComboBox.getValue();
             for(int i = 0; i < mainCompany.arrConcern.length;i++) {
-                if(tempString == mainCompany.arrConcern[i].name) {
+                if(Objects.equals(tempString, mainCompany.arrConcern[i].name)) {
                     infoLabel1.setText(mainCompany.arrConcern[i].name);
                     infoLabel2.setText(String.valueOf(mainCompany.arrConcern[i].value));
                     if(mainCompany.arrConcern[i].type == (byte) 1){
@@ -201,7 +199,7 @@ public class Main extends Application{
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Company");
-        stage.setWidth(1000);
+        stage.setWidth(750);
         stage.setHeight(500);
         stage.show();
     }
