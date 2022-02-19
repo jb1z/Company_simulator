@@ -42,6 +42,10 @@ public class Main extends Application{
         /*Launching thread with a timer*/
         mainTimer = new ThreadedTimer();
         mainTimer.start();
+        /*timerLabel*/
+        Label timerLabel = new Label("Days: 0, Hours: 0, Minutes: 0, Seconds: 0");
+        timerLabel.setVisible(false);
+        StackPane.setAlignment(timerLabel, Pos.TOP_RIGHT);
         Company mainCompany = new Company();
         /*Starting labels*/
         StackPane root = new StackPane();
@@ -119,18 +123,18 @@ public class Main extends Application{
         infoLabel.setVisible(false);
         StackPane.setAlignment(infoLabel, Pos.TOP_LEFT);
         StackPane.setMargin(infoLabel, new Insets(300.0, 0.0, 0.0, 0.0));
-        Label infoLabel1 = new Label();
-        infoLabel1.setVisible(false);
-        StackPane.setAlignment(infoLabel1, Pos.TOP_LEFT);
-        StackPane.setMargin(infoLabel1, new Insets(320.0, 0.0, 0.0, 0.0));
-        Label infoLabel2 = new Label();
-        infoLabel2.setVisible(false);
-        StackPane.setAlignment(infoLabel2, Pos.TOP_LEFT);
-        StackPane.setMargin(infoLabel2, new Insets(340.0, 0.0, 0.0, 0.0));
-        Label infoLabel3 = new Label();
-        infoLabel3.setVisible(false);
-        StackPane.setAlignment(infoLabel3, Pos.TOP_LEFT);
-        StackPane.setMargin(infoLabel3, new Insets(360.0, 0.0, 0.0, 0.0));
+        Label infoLabelName = new Label();
+        infoLabelName.setVisible(false);
+        StackPane.setAlignment(infoLabelName, Pos.TOP_LEFT);
+        StackPane.setMargin(infoLabelName, new Insets(320.0, 0.0, 0.0, 0.0));
+        Label infoLabelValue = new Label();
+        infoLabelValue.setVisible(false);
+        StackPane.setAlignment(infoLabelValue, Pos.TOP_LEFT);
+        StackPane.setMargin(infoLabelValue, new Insets(340.0, 0.0, 0.0, 0.0));
+        Label infoLabelType = new Label();
+        infoLabelType.setVisible(false);
+        StackPane.setAlignment(infoLabelType, Pos.TOP_LEFT);
+        StackPane.setMargin(infoLabelType, new Insets(360.0, 0.0, 0.0, 0.0));
 
         /*Buttons events*/
         AtomicReference<Byte> concernTypeID = new AtomicReference<>((byte) 0);
@@ -151,9 +155,10 @@ public class Main extends Application{
             confirmButton.setVisible(true);
             confirmLabel.setVisible(true);
             infoLabel.setVisible(true);
-            infoLabel1.setVisible(true);
-            infoLabel2.setVisible(true);
-            infoLabel3.setVisible(true);
+            infoLabelName.setVisible(true);
+            infoLabelValue.setVisible(true);
+            infoLabelType.setVisible(true);
+            timerLabel.setVisible(true);
         });
         agricultureButton.setOnAction(event -> buyingButtonClick(concernTypeID, (byte)1, moneyChange,200_000f,agricultureButton, energyButton,
                 itButton, confirmButton, nameInput));
@@ -177,16 +182,16 @@ public class Main extends Application{
             String tempString = concernComboBox.getValue();
             for(int i = 0; i < mainCompany.arrConcern.length;i++) {
                 if(Objects.equals(tempString, mainCompany.arrConcern[i].name)) {
-                    infoLabel1.setText(mainCompany.arrConcern[i].name);
-                    infoLabel2.setText(String.valueOf(mainCompany.arrConcern[i].value));
+                    infoLabelName.setText(mainCompany.arrConcern[i].name);
+                    infoLabelValue.setText(String.valueOf(mainCompany.arrConcern[i].value));
                     if(mainCompany.arrConcern[i].type == (byte) 1){
-                        infoLabel3.setText("Agriculture");
+                        infoLabelType.setText("Agriculture");
                     }
                     else if(mainCompany.arrConcern[i].type == (byte) 2){
-                        infoLabel3.setText("Energy");
+                        infoLabelType.setText("Energy");
                     }
                     else if(mainCompany.arrConcern[i].type == (byte) 3){
-                        infoLabel3.setText("IT");
+                        infoLabelType.setText("IT");
                     }
                 }
             }
@@ -195,7 +200,7 @@ public class Main extends Application{
         /*Scene activating*/
         root.getChildren().addAll(startButton, nameLabel, moneyLabel, valueLabel, agricultureConcern, agricultureButton,
                 energyConcern, energyButton, itConcern, itButton, concernComboBox, nameInput, confirmLabel, confirmButton,
-                infoLabel, infoLabel1, infoLabel2, infoLabel3);
+                infoLabel, infoLabelName, infoLabelValue, infoLabelType, timerLabel);
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Company");
