@@ -5,9 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -16,14 +14,16 @@ public class Main extends Application{
     public static void main(String[] args) {
         launch(args);
     }
-    public void buttonClick(Company company, Label moneyLabel, Label valueLabel, ObservableList<String> concerns,
-                            String concernType, float moneyChange, byte concernTypeID){
+    public String buttonClick(Company company, Label moneyLabel, Label valueLabel, ObservableList<String> concerns,
+                              String concernType, float moneyChange, byte concernTypeID, Button confirmation, TextField text){
         company.moneyChange(-moneyChange);
         moneyLabel.setText("Company's money:" + company.getMoney() + "$");
         valueLabel.setText("Value: " + company.getValue() + "$");
         company.arrConcern = company.arrConcernAdding(company.arrConcern, new Concern(concernType, concernTypeID, moneyChange));
         company.valueRefresh();
         concerns.add(concernType);
+        confirmation.setDisable(false);
+        return text.getText();
     }
     public void start(Stage stage) {
         Company mainCompany = new Company();
@@ -68,12 +68,32 @@ public class Main extends Application{
         StackPane.setMargin(itConcern, new Insets(145.0, 0.0, 0.0, 90.0));
         StackPane.setAlignment(itButton, Pos.TOP_LEFT);
         StackPane.setMargin(itButton, new Insets(140.0, 0.0, 0.0, 0.0));
+        /*Label&TextField&Button*/
+        /*Label*/
+        Label confirmLabel = new Label("Confirm buying of concern by entering it's name:");
+        confirmLabel.setVisible(false);
+        StackPane.setAlignment(confirmLabel, Pos.TOP_LEFT);
+        StackPane.setMargin(confirmLabel, new Insets(180.0, 0.0, 0.0, 00.0));
+        /*TextField*/
+        TextField nameInput = new TextField();
+        nameInput.setMaxWidth(80);
+        nameInput.setVisible(false);
+        nameInput.setEditable(false);
+        StackPane.setAlignment(nameInput, Pos.TOP_LEFT);
+        StackPane.setMargin(nameInput, new Insets(220.0, 0.0, 0.0, 00.0));
+        /*Button*/
+        Button confirmButton = new Button("Confirm");
+        confirmButton.setVisible(false);
+        confirmButton.setDisable(true);
+        confirmButton.setPrefWidth(80);
+        StackPane.setAlignment(confirmButton, Pos.TOP_LEFT);
+        StackPane.setMargin(confirmButton, new Insets(220.0, 0.0, 0.0, 90.0));
         /*ComboBox with all user's concerns*/
         ObservableList<String> concerns = FXCollections.observableArrayList();
-        ComboBox<String> concernComboBox = new ComboBox<String>(concerns);
+        ComboBox<String> concernComboBox = new ComboBox<>(concerns);
         concernComboBox.setPrefWidth(110);
         StackPane.setAlignment(concernComboBox, Pos.TOP_LEFT);
-        StackPane.setMargin(concernComboBox, new Insets(180.0, 0.0, 0.0, 0.0));
+        StackPane.setMargin(concernComboBox, new Insets(260.0, 0.0, 0.0, 0.0));
         concernComboBox.setVisible(false);
 
         /*Buttons events*/
@@ -89,20 +109,24 @@ public class Main extends Application{
             itConcern.setVisible(true);
             itButton.setVisible(true);
             concernComboBox.setVisible(true);
+            nameInput.setVisible(true);
+            confirmButton.setVisible(true);
+            confirmLabel.setVisible(true);
         });
-        agricultureButton.setOnAction(event ->{
-            buttonClick(mainCompany, moneyLabel, valueLabel, concerns, "Agriculture", 200_000, (byte) 1);
-        });
-        energyButton.setOnAction(event ->{
-            buttonClick(mainCompany, moneyLabel, valueLabel, concerns, "Energy", 300_000, (byte) 2);
-        });
-        itButton.setOnAction(event->{
-            buttonClick(mainCompany, moneyLabel, valueLabel, concerns, "IT", 400_000, (byte) 3);
+        agricultureButton.setOnAction(event -> buttonClick(mainCompany, moneyLabel, valueLabel, concerns,
+                "Agriculture", 200_000, (byte) 1, confirmButton, nameInput));
+        energyButton.setOnAction(event -> buttonClick(mainCompany, moneyLabel, valueLabel, concerns,
+                "Energy", 300_000, (byte) 2, confirmButton, nameInput));
+        itButton.setOnAction(event-> buttonClick(mainCompany, moneyLabel, valueLabel, concerns,
+                "IT", 400_000, (byte) 3, confirmButton, nameInput));
+        /*ComboBox event*/
+        concernComboBox.setOnAction(event ->{
+            String tempString = concernComboBox.getValue();
         });
 
         /*Scene activating*/
         root.getChildren().addAll(startButton, nameLabel, moneyLabel, valueLabel, agricultureConcern, agricultureButton,
-                energyConcern, energyButton, itConcern, itButton, concernComboBox);
+                energyConcern, energyButton, itConcern, itButton, concernComboBox, nameInput, confirmLabel, confirmButton);
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Company");
