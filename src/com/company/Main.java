@@ -95,10 +95,27 @@ public class Main extends Application{
         StackPane.setAlignment(concernComboBox, Pos.TOP_LEFT);
         StackPane.setMargin(concernComboBox, new Insets(260.0, 0.0, 0.0, 0.0));
         concernComboBox.setVisible(false);
+        /*Information block*/
+        Label infoLabel = new Label("Information about concern:");
+        infoLabel.setVisible(false);
+        StackPane.setAlignment(infoLabel, Pos.TOP_LEFT);
+        StackPane.setMargin(infoLabel, new Insets(300.0, 0.0, 0.0, 0.0));
+        Label infoLabel1 = new Label();
+        infoLabel1.setVisible(false);
+        StackPane.setAlignment(infoLabel1, Pos.TOP_LEFT);
+        StackPane.setMargin(infoLabel1, new Insets(320.0, 0.0, 0.0, 0.0));
+        Label infoLabel2 = new Label();
+        infoLabel2.setVisible(false);
+        StackPane.setAlignment(infoLabel2, Pos.TOP_LEFT);
+        StackPane.setMargin(infoLabel2, new Insets(340.0, 0.0, 0.0, 0.0));
+        Label infoLabel3 = new Label();
+        infoLabel3.setVisible(false);
+        StackPane.setAlignment(infoLabel3, Pos.TOP_LEFT);
+        StackPane.setMargin(infoLabel3, new Insets(360.0, 0.0, 0.0, 0.0));
 
         /*Buttons events*/
         AtomicReference<Byte> concernTypeID = new AtomicReference<>((byte) 0);
-        AtomicReference<Float> moneyChange = new AtomicReference<Float>(0f);
+        AtomicReference<Float> moneyChange = new AtomicReference<>(0f);
         startButton.setOnAction(event -> {
             nameLabel.setText("Company's name: " + mainCompany.getName());
             moneyLabel.setText("Company's money:" + mainCompany.getMoney() + "$");
@@ -114,6 +131,10 @@ public class Main extends Application{
             nameInput.setVisible(true);
             confirmButton.setVisible(true);
             confirmLabel.setVisible(true);
+            infoLabel.setVisible(true);
+            infoLabel1.setVisible(true);
+            infoLabel2.setVisible(true);
+            infoLabel3.setVisible(true);
         });
         agricultureButton.setOnAction(event -> {
             concernTypeID.set((byte) 1);
@@ -156,11 +177,27 @@ public class Main extends Application{
         /*ComboBox event*/
         concernComboBox.setOnAction(event ->{
             String tempString = concernComboBox.getValue();
+            for(int i = 0; i < mainCompany.arrConcern.length;i++) {
+                if(tempString == mainCompany.arrConcern[i].name) {
+                    infoLabel1.setText(mainCompany.arrConcern[i].name);
+                    infoLabel2.setText(String.valueOf(mainCompany.arrConcern[i].value));
+                    if(mainCompany.arrConcern[i].type == (byte) 1){
+                        infoLabel3.setText("Agriculture");
+                    }
+                    else if(mainCompany.arrConcern[i].type == (byte) 2){
+                        infoLabel3.setText("Energy");
+                    }
+                    else if(mainCompany.arrConcern[i].type == (byte) 3){
+                        infoLabel3.setText("IT");
+                    }
+                }
+            }
         });
 
         /*Scene activating*/
         root.getChildren().addAll(startButton, nameLabel, moneyLabel, valueLabel, agricultureConcern, agricultureButton,
-                energyConcern, energyButton, itConcern, itButton, concernComboBox, nameInput, confirmLabel, confirmButton);
+                energyConcern, energyButton, itConcern, itButton, concernComboBox, nameInput, confirmLabel, confirmButton,
+                infoLabel, infoLabel1, infoLabel2, infoLabel3);
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Company");
