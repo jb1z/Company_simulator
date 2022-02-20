@@ -10,7 +10,7 @@ public class ThreadedTimer extends Thread{
     private int i = 0;
     public Label timerLabel = new Label("Seconds 0");
     ThreadedTimer(){
-        Timeline timer = new Timeline(new KeyFrame(Duration.seconds(1), e->{
+        Timeline timer = new Timeline(new KeyFrame(Duration.millis(1), e->{
             this.i++;
             this.timerLabel.setText("Seconds " + i);
         }));

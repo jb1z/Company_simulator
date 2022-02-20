@@ -147,7 +147,7 @@ public class Main extends Application{
         startButton.setOnAction(event -> {
             mainTimer.start();
             nameLabel.setText("Company's name: " + mainCompany.getName());
-            moneyLabel.setText("Company's money:" + mainCompany.getMoney() + "$");
+            moneyLabel.setText("Company's money: " + mainCompany.getMoney() + "$");
             valueLabel.setText("Value: " + mainCompany.getValue() + "$");
             startButton.setVisible(false);
             agricultureConcern.setVisible(true);
