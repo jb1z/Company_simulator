@@ -9,13 +9,16 @@ import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
-
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Main extends Application{
+    static ThreadedTimer mainTimer;
     public static void main(String[] args) {
         launch(args);
+    }
+    public void labelRefresh(Label label, int valueToRefresh){
+        label.setText(String.valueOf(valueToRefresh));
     }
     public void confirmButtonClick(Company company, Label moneyLabel, Label valueLabel, ObservableList<String> concerns,
                               String concernName, float moneyChange, byte concernTypeID){
@@ -37,15 +40,13 @@ public class Main extends Application{
         confirmButton.setDisable(false);
         nameInput.setEditable(true);
     }
-    static ThreadedTimer mainTimer;
+
     public void start(Stage stage) {
         /*Launching thread with a timer*/
         mainTimer = new ThreadedTimer();
-        mainTimer.start();
         /*timerLabel*/
-        Label timerLabel = new Label("Days: 0, Hours: 0, Minutes: 0, Seconds: 0");
-        timerLabel.setVisible(false);
-        StackPane.setAlignment(timerLabel, Pos.TOP_RIGHT);
+        mainTimer.timerLabel.setVisible(false);
+        StackPane.setAlignment(mainTimer.timerLabel, Pos.TOP_RIGHT);
         Company mainCompany = new Company();
         /*Starting labels*/
         StackPane root = new StackPane();
@@ -111,10 +112,14 @@ public class Main extends Application{
         confirmButton.setPrefWidth(80);
         StackPane.setAlignment(confirmButton, Pos.TOP_LEFT);
         StackPane.setMargin(confirmButton, new Insets(220.0, 0.0, 0.0, 90.0));
-        /*ComboBox with all user's concerns*/
+        /*ComboBox&Label with all user's concerns*/
         ObservableList<String> concerns = FXCollections.observableArrayList();
         ComboBox<String> concernComboBox = new ComboBox<>(concerns);
         concernComboBox.setPrefWidth(110);
+        Label countConcerns = new Label(String.valueOf(mainCompany.getCount()));
+        countConcerns.setVisible(false);
+        StackPane.setAlignment(countConcerns, Pos.TOP_LEFT);
+        StackPane.setMargin(countConcerns, new Insets(265.0, 0.0, 0.0, 120.0));
         StackPane.setAlignment(concernComboBox, Pos.TOP_LEFT);
         StackPane.setMargin(concernComboBox, new Insets(260.0, 0.0, 0.0, 0.0));
         concernComboBox.setVisible(false);
@@ -140,6 +145,7 @@ public class Main extends Application{
         AtomicReference<Byte> concernTypeID = new AtomicReference<>((byte) 0);
         AtomicReference<Float> moneyChange = new AtomicReference<>(0f);
         startButton.setOnAction(event -> {
+            mainTimer.start();
             nameLabel.setText("Company's name: " + mainCompany.getName());
             moneyLabel.setText("Company's money:" + mainCompany.getMoney() + "$");
             valueLabel.setText("Value: " + mainCompany.getValue() + "$");
@@ -158,7 +164,8 @@ public class Main extends Application{
             infoLabelName.setVisible(true);
             infoLabelValue.setVisible(true);
             infoLabelType.setVisible(true);
-            timerLabel.setVisible(true);
+            countConcerns.setVisible(true);
+            mainTimer.timerLabel.setVisible(true);
         });
         agricultureButton.setOnAction(event -> buyingButtonClick(concernTypeID, (byte)1, moneyChange,200_000f,agricultureButton, energyButton,
                 itButton, confirmButton, nameInput));
@@ -176,6 +183,7 @@ public class Main extends Application{
             confirmButton.setDisable(true);
             nameInput.setEditable(false);
             nameInput.clear();
+            labelRefresh(countConcerns, mainCompany.getCount());
         });
         /*ComboBox event*/
         concernComboBox.setOnAction(event ->{
@@ -200,7 +208,7 @@ public class Main extends Application{
         /*Scene activating*/
         root.getChildren().addAll(startButton, nameLabel, moneyLabel, valueLabel, agricultureConcern, agricultureButton,
                 energyConcern, energyButton, itConcern, itButton, concernComboBox, nameInput, confirmLabel, confirmButton,
-                infoLabel, infoLabelName, infoLabelValue, infoLabelType, timerLabel);
+                infoLabel, infoLabelName, infoLabelValue, infoLabelType, countConcerns, mainTimer.timerLabel);
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Company");

@@ -5,9 +5,6 @@ public class Company {
     private float money = 1_000_000;
     private float value = 500_000 + this.money;
     Concern[] arrConcern = new Concern[0];
-    public boolean moneyCheck(float checker){
-        return !(this.money - checker <= 0);
-    }
     public String getName() {
         return this.name;
     }
@@ -32,5 +29,8 @@ public class Company {
         System.arraycopy(origArrConcern, 0, tempArrConcern, 0, origArrConcern.length);
         tempArrConcern[tempArrConcern.length - 1] = elementToAdd;
         return tempArrConcern;
+    }
+    public int getCount(){
+        return Concern.getCount();
     }
 }
