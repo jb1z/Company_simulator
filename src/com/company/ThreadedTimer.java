@@ -8,11 +8,11 @@ import javafx.util.Duration;
 
 public class ThreadedTimer extends Thread{
     private int i = 0;
-    public Label timerLabel = new Label("Seconds 0");
+    public Label timerLabel = new Label("Hours 0");
     ThreadedTimer(){
-        Timeline timer = new Timeline(new KeyFrame(Duration.millis(1), e->{
+        Timeline timer = new Timeline(new KeyFrame(Duration.seconds(10), e->{
             this.i++;
-            this.timerLabel.setText("Seconds " + i);
+            this.timerLabel.setText("Hours " + i);
         }));
         timer.setCycleCount(Animation.INDEFINITE);
         timer.play();
