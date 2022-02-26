@@ -15,11 +15,13 @@ public class Company {
         return this.value;
     }
     Production[] arrCompanyProduction = new Production[3];
+    int[] productionStorage = new int[arrCompanyProduction.length];
     Company(){
         for(int i =0; i < arrCompanyProduction.length; i++){
             arrCompanyProduction[i] = new Production();
             arrCompanyProduction[i].setAmount(100);
             arrCompanyProduction[i].setType((byte)(i+1));
+            productionStorage[i] = 2000;
         }
         arrCompanyProduction[0].setValue(200);
         arrCompanyProduction[1].setValue(400);

@@ -82,7 +82,8 @@ public class Main extends Application{
                 indType++;
             }
             if((i - 1) % 3 == 0){
-                productionLabels[i] = new Label("Amount: " + mainCompany.arrCompanyProduction[indAmount].getAmount());
+                productionLabels[i] = new Label("Amount: " + mainCompany.arrCompanyProduction[indAmount].getAmount()
+                        + "/" + mainCompany.productionStorage[indAmount]);
                 indAmount++;
             }
             if((i - 2) % 3 == 0){

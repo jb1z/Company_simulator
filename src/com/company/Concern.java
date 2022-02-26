@@ -6,7 +6,6 @@ public class Concern {
     private byte type = 0;
     private float value = 0;
     private int creatingTime = 0;
-    public Production concernProduction = new Production();
     Concern(String name, byte type, float value, int creatingTime){
         this.name = name;
         this.type = type;
