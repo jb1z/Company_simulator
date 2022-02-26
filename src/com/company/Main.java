@@ -1,5 +1,8 @@
 package com.company;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -9,6 +12,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
+import javafx.util.Duration;
+
 import java.util.Objects;
 import java.util.concurrent.Exchanger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -18,15 +23,12 @@ public class Main extends Application{
     public static void main(String[] args) {
         launch(args);
     }
-    public void labelRefresh(Label label, int valueToRefresh){
-        label.setText(String.valueOf(valueToRefresh));
-    }
     public void confirmButtonClick(Company company, Label moneyLabel, Label valueLabel, ObservableList<String> concerns,
                               String concernName, float moneyChange, byte concernTypeID){
         company.moneyChange(-moneyChange);
         moneyLabel.setText("Company's money: " + company.getMoney() + "$");
         valueLabel.setText("Company's value: " + company.getValue() + "$");
-        company.arrConcern = company.arrConcernAdding(company.arrConcern, new Concern(concernName, concernTypeID, moneyChange));
+        company.arrConcern = company.arrConcernAdding(company.arrConcern, new Concern(concernName, concernTypeID, moneyChange, TimeExchanger.getTime()));
         company.valueRefresh();
         concerns.add(concernName);
     }
@@ -44,16 +46,12 @@ public class Main extends Application{
 
     public void start(Stage stage) {
         Company mainCompany = new Company();
-        /*Launching thread with a timer*/
-        mainTimer = new ThreadedTimer(mainCompany);
-        /*timerLabel*/
-        mainTimer.timerLabel.setVisible(false);
-        StackPane.setAlignment(mainTimer.timerLabel, Pos.TOP_RIGHT);
+        Label[] productionLabels = new Label[9];
         /*Starting labels*/
         StackPane root = new StackPane();
         root.setStyle("-fx-background-radius: 6;" +
-               "-fx-background-color: rgb(255, 160, 122), rgb(240, 255, 240);" +
-               "-fx-background-insets: 0, 0 1 1 0;");
+                "-fx-background-color: rgb(255, 160, 122), rgb(240, 255, 240);" +
+                "-fx-background-insets: 0, 0 1 1 0;");
         Button startButton = new Button("Start");
         Label nameLabel = new Label();
         StackPane.setAlignment(nameLabel, Pos.TOP_LEFT);
@@ -63,6 +61,45 @@ public class Main extends Application{
         Label valueLabel = new Label();
         StackPane.setAlignment(valueLabel, Pos.TOP_LEFT);
         StackPane.setMargin(valueLabel, new Insets(40.0, 0.0, 0.0, 0.0));
+        /*Production labels*/
+        int indType = 0;
+        int indAmount = 0;
+        int indValue = 0;
+        for(int i = 0; i < productionLabels.length; i++){
+            productionLabels[i] = new Label();
+            if(i % 3 == 0){
+                String strType = "";
+                if(mainCompany.arrCompanyProduction[indType].getType() == 1){
+                    strType = "Agriculture";
+                }
+                else if (mainCompany.arrCompanyProduction[indType].getType() == 2){
+                    strType = "Energy";
+                }
+                else if (mainCompany.arrCompanyProduction[indType].getType() == 3){
+                    strType = "IT";
+                }
+                productionLabels[i] = new Label("Type: " + strType);
+                indType++;
+            }
+            if((i - 1) % 3 == 0){
+                productionLabels[i] = new Label("Amount: " + mainCompany.arrCompanyProduction[indAmount].getAmount());
+                indAmount++;
+            }
+            if((i - 2) % 3 == 0){
+                productionLabels[i] = new Label("Unit's value: " + mainCompany.arrCompanyProduction[indValue].getValue());
+                indValue++;
+            }
+            productionLabels[i].setVisible(false);
+            StackPane.setAlignment(productionLabels[i], Pos.TOP_LEFT);
+            StackPane.setMargin(productionLabels[i], new Insets(65.0 + 30 * i, 0.0, 0.0, 0.0));
+        }
+        Label[] amountLabels = {productionLabels[1], productionLabels[4], productionLabels[7]};
+        /*Launching thread with a timer*/
+        mainTimer = new ThreadedTimer(mainCompany, amountLabels, valueLabel);
+        /*timerLabel*/
+        mainTimer.timerLabel.setVisible(false);
+        StackPane.setAlignment(mainTimer.timerLabel, Pos.TOP_RIGHT);
+
         /*Label&Button for buying agriculture*/
         Label agricultureConcern = new Label("Agriculture cost is 200k$");
         Button agricultureButton = new Button("Buy");
@@ -141,39 +178,6 @@ public class Main extends Application{
         infoLabelType.setVisible(false);
         StackPane.setAlignment(infoLabelType, Pos.TOP_RIGHT);
         StackPane.setMargin(infoLabelType, new Insets(360.0, 5.0, 0.0, 0.0));
-        /*Production labels*/
-        Label[] productionLabels = new Label[9];
-        int indType = 0;
-        int indAmount = 0;
-        int indValue = 0;
-        for(int i = 0; i < productionLabels.length; i++){
-            productionLabels[i] = new Label();
-            if(i % 3 == 0){
-                String strType = "";
-                if(mainCompany.arrCompanyProduction[indType].getType() == 1){
-                    strType = "Agriculture";
-                }
-                else if (mainCompany.arrCompanyProduction[indType].getType() == 2){
-                    strType = "Energy";
-                }
-                else if (mainCompany.arrCompanyProduction[indType].getType() == 3){
-                    strType = "IT";
-                }
-                productionLabels[i] = new Label("Type: " + strType);
-                indType++;
-            }
-            if((i - 1) % 3 == 0){
-                productionLabels[i] = new Label("Amount: " + mainCompany.arrCompanyProduction[indAmount].getAmount());
-                indAmount++;
-            }
-            if((i - 2) % 3 == 0){
-                productionLabels[i] = new Label("Unit's value: " + mainCompany.arrCompanyProduction[indValue].getValue());
-                indValue++;
-            }
-            productionLabels[i].setVisible(false);
-            StackPane.setAlignment(productionLabels[i], Pos.TOP_LEFT);
-            StackPane.setMargin(productionLabels[i], new Insets(65.0 + 30 * i, 0.0, 0.0, 0.0));
-        }
 
         /*Buttons events*/
         AtomicReference<Byte> concernTypeID = new AtomicReference<>((byte) 0);
@@ -204,6 +208,13 @@ public class Main extends Application{
                 productionLabels[i].setVisible(true);
             }
         });
+        Timeline abilityToBuyCheck = new Timeline(new KeyFrame(Duration.millis(100), e->{
+            agricultureButton.setDisable(mainCompany.getMoney() < 200_000f || !confirmButton.isDisable());
+            energyButton.setDisable(mainCompany.getMoney() < 300_000f || !confirmButton.isDisable());
+            itButton.setDisable(mainCompany.getMoney() < 300_000f || !confirmButton.isDisable());
+        }));
+        abilityToBuyCheck.setCycleCount(Animation.INDEFINITE);
+        abilityToBuyCheck.play();
         agricultureButton.setOnAction(event -> buyingButtonClick(concernTypeID, (byte)1, moneyChange,200_000f,agricultureButton, energyButton,
                 itButton, confirmButton, nameInput));
         energyButton.setOnAction(event -> buyingButtonClick(concernTypeID, (byte)2, moneyChange,300_000f,agricultureButton, energyButton,
@@ -220,7 +231,7 @@ public class Main extends Application{
             confirmButton.setDisable(true);
             nameInput.setEditable(false);
             nameInput.clear();
-            labelRefresh(countConcerns, mainCompany.getCount());
+            countConcerns.setText(String.valueOf(mainCompany.getCount()));
         });
         /*ComboBox event*/
         concernComboBox.setOnAction(event ->{
@@ -241,7 +252,6 @@ public class Main extends Application{
                 }
             }
         });
-
         /*Scene activating*/
         root.getChildren().addAll(startButton, nameLabel, moneyLabel, valueLabel, agricultureConcern, agricultureButton,
                 energyConcern, energyButton, itConcern, itButton, concernComboBox, nameInput, confirmLabel, confirmButton,
