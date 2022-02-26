@@ -10,6 +10,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import java.util.Objects;
+import java.util.concurrent.Exchanger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Main extends Application{
@@ -42,12 +43,12 @@ public class Main extends Application{
     }
 
     public void start(Stage stage) {
+        Company mainCompany = new Company();
         /*Launching thread with a timer*/
-        mainTimer = new ThreadedTimer();
+        mainTimer = new ThreadedTimer(mainCompany);
         /*timerLabel*/
         mainTimer.timerLabel.setVisible(false);
         StackPane.setAlignment(mainTimer.timerLabel, Pos.TOP_RIGHT);
-        Company mainCompany = new Company();
         /*Starting labels*/
         StackPane root = new StackPane();
         root.setStyle("-fx-background-radius: 6;" +

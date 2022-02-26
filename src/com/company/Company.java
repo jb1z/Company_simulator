@@ -46,13 +46,6 @@ public class Company {
         tempArrConcern[tempArrConcern.length - 1] = elementToAdd;
         return tempArrConcern;
     }
-    /*public Production[] arrProductionAdding(Production[] origArrProduction, Production elementToAdd)
-    {
-        Production[] tempArrProduction = new Production[origArrProduction.length + 1];
-        System.arraycopy(origArrProduction, 0, tempArrProduction, 0, origArrProduction.length);
-        tempArrProduction[tempArrProduction.length - 1] = elementToAdd;
-        return tempArrProduction;
-    }*/
     public int getCount(){
         return Concern.getCount();
     }
