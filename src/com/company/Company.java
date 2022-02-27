@@ -18,15 +18,10 @@ public class Company {
     int[] productionStorage = new int[arrCompanyProduction.length];
     Company(){
         for(int i =0; i < arrCompanyProduction.length; i++){
-            arrCompanyProduction[i] = new Production();
-            arrCompanyProduction[i].setAmount(100);
-            arrCompanyProduction[i].setType((byte)(i+1));
+            arrCompanyProduction[i] = new Production((byte)(i+1), 200 + i * 200,100);
             productionStorage[i] = 2000;
         }
-        arrCompanyProduction[0].setValue(200);
-        arrCompanyProduction[1].setValue(400);
-        arrCompanyProduction[2].setValue(800);
-        money = 1_000_000;
+        money = 600_000;
         valueRefresh();
     }
     public void moneyChange(float change){

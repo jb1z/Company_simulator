@@ -25,12 +25,26 @@ public class Main extends Application{
     }
     public void confirmButtonClick(Company company, Label moneyLabel, Label valueLabel, ObservableList<String> concerns,
                               String concernName, float moneyChange, byte concernTypeID){
-        company.moneyChange(-moneyChange);
-        moneyLabel.setText("Company's money: " + company.getMoney() + "$");
-        valueLabel.setText("Company's value: " + company.getValue() + "$");
-        company.arrConcern = company.arrConcernAdding(company.arrConcern, new Concern(concernName, concernTypeID, moneyChange, TimeExchanger.getTime()));
-        company.valueRefresh();
-        concerns.add(concernName);
+        boolean nameCheck = false;
+        for(int i = 0; i < company.arrConcern.length; i++){
+            if (Objects.equals(company.arrConcern[i].getName(), concernName)) {
+                nameCheck = true;
+            }
+        }
+        if(nameCheck){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Attention!");
+            alert.setHeaderText(null);
+            alert.setContentText("This name is already exist! Choose another one.");
+            alert.showAndWait();
+        } else {
+            company.arrConcern = company.arrConcernAdding(company.arrConcern, new Concern(concernName, concernTypeID, moneyChange, TimeExchanger.getTime()));
+            company.valueRefresh();
+            concerns.add(concernName);
+            company.moneyChange(-moneyChange);
+            moneyLabel.setText("Company's money: " + company.getMoney() + "$");
+            valueLabel.setText("Company's value: " + company.getValue() + "$");
+        }
     }
     public void buyingButtonClick(AtomicReference<Byte> concernTypeID, byte ID, AtomicReference<Float> moneyChange,
                                   float change, Button agricultureButton, Button energyButton, Button itButton,
@@ -47,20 +61,25 @@ public class Main extends Application{
     public void start(Stage stage) {
         Company mainCompany = new Company();
         Label[] productionLabels = new Label[9];
-        /*Starting labels*/
         StackPane root = new StackPane();
-        root.setStyle("-fx-background-radius: 6;" +
-                "-fx-background-color: rgb(255, 160, 122), rgb(240, 255, 240);" +
-                "-fx-background-insets: 0, 0 1 1 0;");
-        Button startButton = new Button("Start");
+        /*TextField*/
+        TextField nameInput = new TextField();
+        /*ComboBox&Label with all user's concerns*/
+        ObservableList<String> concerns = FXCollections.observableArrayList();
+        ComboBox<String> concernComboBox = new ComboBox<>(concerns);
+        /*Labels*/
         Label nameLabel = new Label();
-        StackPane.setAlignment(nameLabel, Pos.TOP_LEFT);
         Label moneyLabel = new Label();
-        StackPane.setAlignment(moneyLabel, Pos.TOP_LEFT);
-        StackPane.setMargin(moneyLabel, new Insets(20.0, 0.0, 0.0, 0.0));
         Label valueLabel = new Label();
-        StackPane.setAlignment(valueLabel, Pos.TOP_LEFT);
-        StackPane.setMargin(valueLabel, new Insets(40.0, 0.0, 0.0, 0.0));
+        Label agricultureConcern = new Label("Agriculture cost is 200k$");
+        Label energyConcern = new Label("Energy cost is 300k$");
+        Label itConcern = new Label("IT cost is 400k$");
+        Label confirmLabel = new Label("Confirm buying of concern by entering it's name:");
+        Label infoLabel = new Label("Information about concern:");
+        Label infoLabelName = new Label();
+        Label infoLabelValue = new Label();
+        Label infoLabelType = new Label();
+        Label countConcerns = new Label(String.valueOf(mainCompany.getCount()));
         /*Production labels*/
         int indType = 0;
         int indAmount = 0;
@@ -95,91 +114,80 @@ public class Main extends Application{
             StackPane.setMargin(productionLabels[i], new Insets(65.0 + 30 * i, 0.0, 0.0, 0.0));
         }
         Label[] amountLabels = {productionLabels[1], productionLabels[4], productionLabels[7]};
-        /*Launching thread with a timer*/
+        /*Buttons*/
+        Button startButton = new Button("Start");
+        Button agricultureButton = new Button("Buy");
+        Button energyButton = new Button("Buy");
+        Button itButton = new Button("Buy");
+        Button confirmButton = new Button("Confirm");
+        /*Labels visibility*/
+        agricultureConcern.setVisible(false);
+        energyConcern.setVisible(false);
+        itConcern.setVisible(false);
+        confirmLabel.setVisible(false);
+        countConcerns.setVisible(false);
+        infoLabel.setVisible(false);
+        infoLabelName.setVisible(false);
+        infoLabelValue.setVisible(false);
+        infoLabelType.setVisible(false);
+        /*Buttons visibility*/
+        agricultureButton.setVisible(false);
+        energyButton.setVisible(false);
+        itButton.setVisible(false);
+        confirmButton.setVisible(false);
+        /*Other's objects visibility*/
+        nameInput.setVisible(false);
+        concernComboBox.setVisible(false);
+        /*Placement*/
+        StackPane.setAlignment(nameLabel, Pos.TOP_LEFT);
+        StackPane.setAlignment(moneyLabel, Pos.TOP_LEFT);
+        StackPane.setAlignment(valueLabel, Pos.TOP_LEFT);
+        StackPane.setAlignment(agricultureConcern, Pos.TOP_RIGHT);
+        StackPane.setAlignment(agricultureButton, Pos.TOP_RIGHT);
+        StackPane.setAlignment(energyConcern, Pos.TOP_RIGHT);
+        StackPane.setAlignment(energyButton, Pos.TOP_RIGHT);
+        StackPane.setAlignment(itConcern, Pos.TOP_RIGHT);
+        StackPane.setAlignment(itButton, Pos.TOP_RIGHT);
+        StackPane.setAlignment(confirmLabel, Pos.TOP_RIGHT);
+        StackPane.setAlignment(infoLabel, Pos.TOP_RIGHT);
+        StackPane.setAlignment(infoLabelName, Pos.TOP_RIGHT);
+        StackPane.setAlignment(confirmButton, Pos.TOP_RIGHT);
+        StackPane.setAlignment(infoLabelValue, Pos.TOP_RIGHT);
+        StackPane.setAlignment(infoLabelType, Pos.TOP_RIGHT);
+        StackPane.setAlignment(countConcerns, Pos.TOP_RIGHT);
+        StackPane.setAlignment(concernComboBox, Pos.TOP_RIGHT);
+        StackPane.setAlignment(nameInput, Pos.TOP_RIGHT);
+        StackPane.setMargin(moneyLabel, new Insets(20.0, 0.0, 0.0, 0.0));
+        StackPane.setMargin(valueLabel, new Insets(40.0, 0.0, 0.0, 0.0));
+        StackPane.setMargin(agricultureConcern, new Insets(65.0, 95.0, 0.0, 0.0));
+        StackPane.setMargin(agricultureButton, new Insets(60.0, 5.0, 0.0, 0.0));
+        StackPane.setMargin(energyConcern, new Insets(105.0, 95.0, 0.0, 0.0));
+        StackPane.setMargin(energyButton, new Insets(100.0, 5.0, 0.0, 0.0));
+        StackPane.setMargin(itConcern, new Insets(145.0, 95.0, 0.0, 0.0));
+        StackPane.setMargin(itButton, new Insets(140.0, 5.0, 0.0, 0.0));
+        StackPane.setMargin(confirmLabel, new Insets(180.0, 5.0, 0.0, 0.0));
+        StackPane.setMargin(infoLabel, new Insets(300.0, 5.0, 0.0, 0.0));
+        StackPane.setMargin(confirmButton, new Insets(220.0, 5.0, 0.0, 0.0));
+        StackPane.setMargin(infoLabelName, new Insets(320.0, 5.0, 0.0, 0.0));
+        StackPane.setMargin(infoLabelValue, new Insets(340.0, 5.0, 0.0, 0.0));
+        StackPane.setMargin(infoLabelType, new Insets(360.0, 5.0, 0.0, 0.0));
+        StackPane.setMargin(countConcerns, new Insets(265.0, 45.0, 0.0, 0.0));
+        StackPane.setMargin(concernComboBox, new Insets(260.0, 65.0, 0.0, 0.0));
+        StackPane.setMargin(nameInput, new Insets(220.0, 95.0, 0.0, 0.0));
+        /*Size setting*/
+        agricultureButton.setPrefWidth(80);
+        energyButton.setPrefWidth(80);
+        itButton.setPrefWidth(80);
+        nameInput.setMaxWidth(80);
+        confirmButton.setPrefWidth(80);
+        concernComboBox.setPrefWidth(110);
+        /*Editable&Disable*/
+        nameInput.setEditable(false);
+        confirmButton.setDisable(true);
+        /*Launching thread with a timer with timerLabel*/
         mainTimer = new ThreadedTimer(mainCompany, amountLabels, valueLabel);
-        /*timerLabel*/
         mainTimer.timerLabel.setVisible(false);
         StackPane.setAlignment(mainTimer.timerLabel, Pos.TOP_RIGHT);
-
-        /*Label&Button for buying agriculture*/
-        Label agricultureConcern = new Label("Agriculture cost is 200k$");
-        Button agricultureButton = new Button("Buy");
-        agricultureButton.setPrefWidth(80);
-        agricultureConcern.setVisible(false);
-        agricultureButton.setVisible(false);
-        StackPane.setAlignment(agricultureConcern, Pos.TOP_RIGHT);
-        StackPane.setMargin(agricultureConcern, new Insets(65.0, 95.0, 0.0, 0.0));
-        StackPane.setAlignment(agricultureButton, Pos.TOP_RIGHT);
-        StackPane.setMargin(agricultureButton, new Insets(60.0, 5.0, 0.0, 0.0));
-        /*Label&Button for buying energy*/
-        Label energyConcern = new Label("Energy cost is 300k$");
-        Button energyButton = new Button("Buy");
-        energyButton.setPrefWidth(80);
-        energyConcern.setVisible(false);
-        energyButton.setVisible(false);
-        StackPane.setAlignment(energyConcern, Pos.TOP_RIGHT);
-        StackPane.setMargin(energyConcern, new Insets(105.0, 95.0, 0.0, 0.0));
-        StackPane.setAlignment(energyButton, Pos.TOP_RIGHT);
-        StackPane.setMargin(energyButton, new Insets(100.0, 5.0, 0.0, 0.0));
-        /*Label&Button for buying it*/
-        Label itConcern = new Label("IT cost is 400k$");
-        Button itButton = new Button("Buy");
-        itButton.setPrefWidth(80);
-        itConcern.setVisible(false);
-        itButton.setVisible(false);
-        StackPane.setAlignment(itConcern, Pos.TOP_RIGHT);
-        StackPane.setMargin(itConcern, new Insets(145.0, 95.0, 0.0, 0.0));
-        StackPane.setAlignment(itButton, Pos.TOP_RIGHT);
-        StackPane.setMargin(itButton, new Insets(140.0, 5.0, 0.0, 0.0));
-        /*Label&TextField&Button*/
-        /*Label*/
-        Label confirmLabel = new Label("Confirm buying of concern by entering it's name:");
-        confirmLabel.setVisible(false);
-        StackPane.setAlignment(confirmLabel, Pos.TOP_RIGHT);
-        StackPane.setMargin(confirmLabel, new Insets(180.0, 5.0, 0.0, 0.0));
-        /*TextField*/
-        TextField nameInput = new TextField();
-        nameInput.setMaxWidth(80);
-        nameInput.setVisible(false);
-        nameInput.setEditable(false);
-        StackPane.setAlignment(nameInput, Pos.TOP_RIGHT);
-        StackPane.setMargin(nameInput, new Insets(220.0, 95.0, 0.0, 0.0));
-        /*Button*/
-        Button confirmButton = new Button("Confirm");
-        confirmButton.setVisible(false);
-        confirmButton.setDisable(true);
-        confirmButton.setPrefWidth(80);
-        StackPane.setAlignment(confirmButton, Pos.TOP_RIGHT);
-        StackPane.setMargin(confirmButton, new Insets(220.0, 5.0, 0.0, 0.0));
-        /*ComboBox&Label with all user's concerns*/
-        ObservableList<String> concerns = FXCollections.observableArrayList();
-        ComboBox<String> concernComboBox = new ComboBox<>(concerns);
-        concernComboBox.setPrefWidth(110);
-        Label countConcerns = new Label(String.valueOf(mainCompany.getCount()));
-        countConcerns.setVisible(false);
-        StackPane.setAlignment(countConcerns, Pos.TOP_RIGHT);
-        StackPane.setMargin(countConcerns, new Insets(265.0, 45.0, 0.0, 0.0));
-        StackPane.setAlignment(concernComboBox, Pos.TOP_RIGHT);
-        StackPane.setMargin(concernComboBox, new Insets(260.0, 65.0, 0.0, 0.0));
-        concernComboBox.setVisible(false);
-        /*Information block*/
-        Label infoLabel = new Label("Information about concern:");
-        infoLabel.setVisible(false);
-        StackPane.setAlignment(infoLabel, Pos.TOP_RIGHT);
-        StackPane.setMargin(infoLabel, new Insets(300.0, 5.0, 0.0, 0.0));
-        Label infoLabelName = new Label();
-        infoLabelName.setVisible(false);
-        StackPane.setAlignment(infoLabelName, Pos.TOP_RIGHT);
-        StackPane.setMargin(infoLabelName, new Insets(320.0, 5.0, 0.0, 0.0));
-        Label infoLabelValue = new Label();
-        infoLabelValue.setVisible(false);
-        StackPane.setAlignment(infoLabelValue, Pos.TOP_RIGHT);
-        StackPane.setMargin(infoLabelValue, new Insets(340.0, 5.0, 0.0, 0.0));
-        Label infoLabelType = new Label();
-        infoLabelType.setVisible(false);
-        StackPane.setAlignment(infoLabelType, Pos.TOP_RIGHT);
-        StackPane.setMargin(infoLabelType, new Insets(360.0, 5.0, 0.0, 0.0));
-
         /*Buttons events*/
         AtomicReference<Byte> concernTypeID = new AtomicReference<>((byte) 0);
         AtomicReference<Float> moneyChange = new AtomicReference<>(0f);
@@ -254,6 +262,9 @@ public class Main extends Application{
             }
         });
         /*Scene activating*/
+        root.setStyle("-fx-background-radius: 6;" +
+                "-fx-background-color: rgb(255, 160, 122), rgb(240, 255, 240);" +
+                "-fx-background-insets: 0, 0 1 1 0;");
         root.getChildren().addAll(startButton, nameLabel, moneyLabel, valueLabel, agricultureConcern, agricultureButton,
                 energyConcern, energyButton, itConcern, itButton, concernComboBox, nameInput, confirmLabel, confirmButton,
                 infoLabel, infoLabelName, infoLabelValue, infoLabelType, countConcerns, mainTimer.timerLabel);

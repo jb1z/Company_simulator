@@ -14,15 +14,26 @@ public class ThreadedTimer extends Thread{
             this.i++;
             this.timerLabel.setText("Hours " + i);
             TimeExchanger.setTime(i);
+            /*Production increasing once every 12 hour*/
             for(int j = 0; j < mainCompany.arrConcern.length; j++){
                 if((i - mainCompany.arrConcern[j].getCreatingTime()) % 12 == 0){
-                    mainCompany.arrCompanyProduction[mainCompany.arrConcern[j].getType() - 1].setAmount(
-                            mainCompany.arrCompanyProduction[mainCompany.arrConcern[j].getType() - 1].getAmount() + 100);
-                amountLabels[mainCompany.arrConcern[j].getType() - 1].setText("Amount: " +
-                        mainCompany.arrCompanyProduction[mainCompany.arrConcern[j].getType() - 1].getAmount()
-                + "/" + mainCompany.productionStorage[mainCompany.arrConcern[j].getType() - 1]);
-                mainCompany.valueRefresh();
-                valueLabel.setText("Company's value: " + mainCompany.getValue() + "$");
+                    if(mainCompany.arrCompanyProduction[mainCompany.arrConcern[j].getType() - 1].getAmount() < mainCompany.productionStorage[j]){
+                        if(mainCompany.arrCompanyProduction[mainCompany.arrConcern[j].consumeProduction.getType() - 1].getAmount() > 0){
+                            mainCompany.arrCompanyProduction[mainCompany.arrConcern[j].getType() - 1].setAmount(
+                                    mainCompany.arrCompanyProduction[mainCompany.arrConcern[j].getType() - 1].getAmount() + 100);
+                            amountLabels[mainCompany.arrConcern[j].getType() - 1].setText("Amount: " +
+                                    mainCompany.arrCompanyProduction[mainCompany.arrConcern[j].getType() - 1].getAmount()
+                                    + "/" + mainCompany.productionStorage[mainCompany.arrConcern[j].getType() - 1]);
+                            mainCompany.arrCompanyProduction[mainCompany.arrConcern[j].consumeProduction.getType() - 1].setAmount(
+                                    mainCompany.arrCompanyProduction[mainCompany.arrConcern[j].consumeProduction.getType() - 1].getAmount()
+                                            - mainCompany.arrConcern[j].consumeProduction.getAmount());
+                            amountLabels[mainCompany.arrConcern[j].consumeProduction.getType() - 1].setText("Amount: " +
+                                    mainCompany.arrCompanyProduction[mainCompany.arrConcern[j].consumeProduction.getType() - 1].getAmount()
+                                    + "/" + mainCompany.productionStorage[mainCompany.arrConcern[j].consumeProduction.getType() - 1]);
+                            mainCompany.valueRefresh();
+                            valueLabel.setText("Company's value: " + mainCompany.getValue() + "$");
+                        }
+                    }
                 }
             }
         }));
