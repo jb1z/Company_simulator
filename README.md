@@ -1,4 +1,4 @@
-# ***The program's description***
+# ***The program's description*** (the programm need rework, because the main idea was changed)
 ## **Extractive&Manufacturing  industry**
 ### Mettallurgy
 * #### *Ferrous metallurgy*
